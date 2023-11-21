@@ -1,0 +1,60 @@
+plugins {
+    id 'application' // <1>
+}
+
+archivesBaseName = 'modpackDownloader'
+version = '1.0'
+
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'modpackDownloader.App'
+        )
+    }
+
+    //https://stackoverflow.com/questions/49278063/how-do-i-create-an-executable-fat-jar-with-gradle-with-implementation-dependenci
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+repositories {
+    mavenCentral() // <2>
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.3' // <3>
+
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    implementation 'com.google.guava:guava:32.1.1-jre' // <4>
+
+    implementation 'com.google.code.gson:gson:2.10.1'
+}
+
+application {
+    mainModule = 'modpackDownloader'
+    mainClass = 'modpackDownloader.App' // <5>
+}
+
+tasks.named('test') {
+    useJUnitPlatform() // <6>
+}
+
+tasks.named('compileJava') {
+    // use the project's version or define one directly
+    options.javaModuleVersion = provider { version }
+}
+
+//https://docs.gradle.org/current/userguide/building_java_projects.html
+//this doesn't work...
+tasks.register('uberJar', Jar) {
+    archiveClassifier = 'uber'
+
+    from sourceSets.main.output
+
+    dependsOn configurations.runtimeClasspath
+    from {
+        configurations.runtimeClasspath.findAll { it.name.endsWith('jar') }.collect { zipTree(it) }
+    }
+}
