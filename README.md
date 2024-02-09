@@ -11,3 +11,7 @@ It exists because I don't want to download the CurseForge launcher only to downl
 4.  Either doubleclick the jar file or run it from the command line with:
     > java -jar ModpackDownloader.jar
 5.  Enjoy while all required mods are being downloaded
+
+# Issues
+
+If you have any issues downloading mod packs, please make sure to open a new issue on GitHub with the mod pack in question.
